@@ -43,3 +43,5 @@ cw2 = "2.0"
 schemars = "0.8"
 serde = { version = "1", default-features = false, features = ["derive"] }
 thiserror = "1"
+
+snark-bn256-verifier-wasm = { package = "snark-bn254-verifier", git = "https://github.com/S1nus/snark-bn254-verifier-wasm", rev = "96c247bbc8a47819b96c25199164a85c06a5763d" }
