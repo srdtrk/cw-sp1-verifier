@@ -91,12 +91,12 @@ mod query {
             .expect("Unable to read committed_values_digest");
 
         #[cfg(feature = "groth16")]
-        if !snark_bn254_verifier::Groth16Verifier::verify(
+        if !snark_bn256_verifier_wasm::verify_groth16_wasm(
             proof.as_slice(),
             state::GROTH16_VK_BYTES,
             &[vkey_hash, committed_values_digest],
         )
-        .map_err(|e| ContractError::Groth16Error(e.to_string()))?
+        .map_err(|e| ContractError::Groth16Error(e.as_string().unwrap_or_default()))?
         {
             return Err(ContractError::Groth16Error(
                 "Groth16 verification failed".to_string(),
@@ -104,12 +104,12 @@ mod query {
         }
 
         #[cfg(feature = "plonk")]
-        if !snark_bn254_verifier::PlonkVerifier::verify(
+        if !snark_bn256_verifier_wasm::verify_plonk_wasm(
             proof.as_slice(),
             state::PLONK_VK_BYTES,
             &[vkey_hash, committed_values_digest],
         )
-        .map_err(|e| ContractError::PlonkError(e.to_string()))?
+        .map_err(|e| ContractError::PlonkError(e.as_string().unwrap_or_default()))?
         {
             return Err(ContractError::PlonkError(
                 "Plonk verification failed".to_string(),

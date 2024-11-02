@@ -3,7 +3,7 @@
 //! This module defines the messages that this contract receives.
 
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{Binary, Empty};
+use cosmwasm_std::Binary;
 
 /// The message to instantiate the contract.
 #[cw_serde]
@@ -18,7 +18,7 @@ pub enum ExecuteMsg {}
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     /// Verifies an SP1 proof.
-    #[returns(Empty)]
+    #[returns(cosmwasm_std::Empty)]
     VerifyProof {
         /// The proof to verify.
         proof: Binary,
