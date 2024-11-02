@@ -11,6 +11,11 @@ use crate::types::{
 #[cfg(all(feature = "plonk", feature = "groth16", feature = "export"))]
 compile_error!("This contract cannot be built with both `plonk` and `groth16` features enabled.");
 
+#[cfg(all(not(feature = "plonk"), not(feature = "groth16"), feature = "export"))]
+compile_error!(
+    "This contract cannot be built without either `plonk` or `groth16` feature enabled."
+);
+
 /// `CONTRACT_NAME` is the name of the contract recorded with [`cw2`]
 #[cfg(feature = "groth16")]
 pub const CONTRACT_NAME: &str = "crates.io:cw-sp1-verifier-groth16";

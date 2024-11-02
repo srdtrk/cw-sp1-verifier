@@ -27,6 +27,14 @@ export = []
 plonk = []
 groth16 = []
 
+[package.metadata.optimizer]
+# Tell the cosmwasm/optimizer docker image to build two different contracts with different features:
+standard-build = false
+builds = [
+  { name = "groth16", default-features = false, features = ["export", "groth16"] },
+  { name = "plonk", default-features = false, features = ["export", "plonk"] },
+]
+
 [package.metadata.scripts]
 optimize = """docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
@@ -46,6 +54,5 @@ schemars = "0.8"
 serde = { version = "1", default-features = false, features = ["derive"] }
 thiserror = "1"
 
-snark-bn256-verifier-wasm = { package = "snark-bn254-verifier", git = "https://github.com/srdtrk/snark-bn254-verifier-wasm", branch = "main" }
-# snark-bn254-verifier = { git = "https://github.com/succinctlabs/snark-bn254-verifier" }
+snark-bn256-verifier-wasm = { package = "snark-bn254-verifier", git = "https://github.com/srdtrk/snark-bn254-verifier-wasm", rev = "0fe793123215c389095da99f0cfe682dd8d97eaf" }
 bn = { git = "https://github.com/sp1-patches/bn", branch = "patch-v0.7.0", package = "substrate-bn" }
