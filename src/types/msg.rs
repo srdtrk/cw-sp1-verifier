@@ -25,6 +25,6 @@ pub enum QueryMsg {
         /// The public values to verify the proof against.
         public_values: Binary,
         /// The verification key of the sp1 program.
-        vk: Binary,
+        vk_hash: String,
     },
 }

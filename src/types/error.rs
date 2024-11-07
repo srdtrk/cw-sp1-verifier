@@ -16,9 +16,9 @@ pub enum ContractError {
 
     /// Error returned when groth16 verification fails.
     #[error("{0}")]
-    Groth16Error(String),
+    Groth16Error(#[from] sp1_verifier::Groth16Error),
 
     /// Error returned when plonk verification fails.
     #[error("{0}")]
-    PlonkError(String),
+    PlonkError(#[from] sp1_verifier::PlonkError),
 }

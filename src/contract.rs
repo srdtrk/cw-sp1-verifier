@@ -66,16 +66,13 @@ pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> Result<Binary, ContractEr
         QueryMsg::VerifyProof {
             proof,
             public_values,
-            vk,
-        } => query::verify_proof(proof, public_values, vk).map(|_| b"{}".into()),
+            vk_hash,
+        } => query::verify_proof(proof, public_values, vk_hash).map(|_| b"{}".into()),
     }
 }
 
 mod query {
-    use bn::Fr;
     use cosmwasm_std::Empty;
-
-    use crate::types::state;
 
     use super::{Binary, ContractError};
 
@@ -89,37 +86,23 @@ mod query {
     pub fn verify_proof(
         proof: Binary,
         public_values: Binary,
-        vk: Binary,
+        vk_hash: String,
     ) -> Result<Empty, ContractError> {
-        let vkey_hash = Fr::from_slice(vk.as_slice()).expect("Unable to read vkey_hash");
-        let committed_values_digest = Fr::from_slice(public_values.as_slice())
-            .expect("Unable to read committed_values_digest");
-
         #[cfg(feature = "groth16")]
-        if !snark_bn256_verifier_wasm::verify_groth16_wasm(
+        sp1_verifier::Groth16Verifier::verify(
             proof.as_slice(),
-            state::GROTH16_VK_BYTES,
-            &[vkey_hash, committed_values_digest],
-        )
-        .map_err(|e| ContractError::Groth16Error(e.as_string().unwrap_or_default()))?
-        {
-            return Err(ContractError::Groth16Error(
-                "Groth16 verification failed".to_string(),
-            ));
-        }
+            public_values.as_slice(),
+            &vk_hash,
+            &sp1_verifier::GROTH16_VK_BYTES,
+        )?;
 
         #[cfg(feature = "plonk")]
-        if !snark_bn256_verifier_wasm::verify_plonk_wasm(
+        sp1_verifier::PlonkVerifier::verify(
             proof.as_slice(),
-            state::PLONK_VK_BYTES,
-            &[vkey_hash, committed_values_digest],
-        )
-        .map_err(|e| ContractError::PlonkError(e.as_string().unwrap_or_default()))?
-        {
-            return Err(ContractError::PlonkError(
-                "Plonk verification failed".to_string(),
-            ));
-        }
+            public_values.as_slice(),
+            &vk_hash,
+            &sp1_verifier::PLONK_VK_BYTES,
+        )?;
 
         Ok(Empty::default())
     }

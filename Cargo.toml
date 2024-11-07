@@ -54,5 +54,4 @@ schemars = "0.8"
 serde = { version = "1", default-features = false, features = ["derive"] }
 thiserror = "1"
 
-snark-bn256-verifier-wasm = { package = "snark-bn254-verifier", git = "https://github.com/srdtrk/snark-bn254-verifier-wasm", rev = "0fe793123215c389095da99f0cfe682dd8d97eaf" }
-bn = { git = "https://github.com/sp1-patches/bn", branch = "patch-v0.7.0", package = "substrate-bn" }
+sp1-verifier = { git = "https://github.com/succinctlabs/sp1", rev = "1a25bc4b17fd5a123519e29d91b17f89d5f735ee" }
