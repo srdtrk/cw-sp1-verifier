@@ -109,4 +109,52 @@ mod query {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use cosmwasm_std::{
+        from_json,
+        testing::{message_info, mock_dependencies, mock_env},
+    };
+
+    #[derive(Debug, serde::Serialize, serde::Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct TestingFixture {
+        vkey: String,
+        public_values: String,
+        proof: String,
+    }
+
+    #[test]
+    fn test_query_verify_proof() {
+        let mut deps = mock_dependencies();
+
+        let creator = deps.api.addr_make("creator");
+        let info = message_info(&creator, &[]);
+        let env = mock_env();
+
+        // instantiate the contract
+        let init_msg = super::InstantiateMsg {};
+        let res = super::instantiate(deps.as_mut(), env.clone(), info, init_msg).unwrap();
+        assert_eq!(0, res.messages.len());
+
+        #[cfg(feature = "groth16")]
+        let fixture: TestingFixture =
+            from_json(include_bytes!("../fixtures/groth16-fixture.json")).unwrap();
+
+        #[cfg(feature = "plonk")]
+        let fixture: TestingFixture =
+            from_json(include_bytes!("../fixtures/plonk-fixture.json")).unwrap();
+
+        let proof_bz = hex::decode(fixture.proof.strip_prefix("0x").unwrap()).unwrap();
+        let public_values_bz =
+            hex::decode(fixture.public_values.strip_prefix("0x").unwrap()).unwrap();
+
+        let msg = super::QueryMsg::VerifyProof {
+            proof: proof_bz.into(),
+            public_values: public_values_bz.into(),
+            vk_hash: fixture.vkey,
+        };
+
+        let res = super::query(deps.as_ref(), env, msg).unwrap();
+        assert_eq!(b"{}", res.as_slice());
+    }
+}

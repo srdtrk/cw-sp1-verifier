@@ -55,3 +55,6 @@ serde = { version = "1", default-features = false, features = ["derive"] }
 thiserror = "1"
 
 sp1-verifier = { git = "https://github.com/succinctlabs/sp1", rev = "1a25bc4b17fd5a123519e29d91b17f89d5f735ee" }
+
+[dev-dependencies]
+hex = "0.4"

@@ -411,6 +411,7 @@ dependencies = [
  "cosmwasm-std",
  "cw-storage-plus",
  "cw2",
+ "hex",
  "schemars",
  "serde",
  "sp1-verifier",

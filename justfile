@@ -19,4 +19,5 @@ generate-schemas:
 
 # Run the unit tests
 unit-tests:
-  cargo test --locked --all-features
+  cargo test --locked --no-default-features --features export,groth16
+  cargo test --locked --no-default-features --features export,plonk
