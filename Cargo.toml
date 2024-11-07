@@ -8,6 +8,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+doctest = false
 
 [profile.release]
 opt-level = 3

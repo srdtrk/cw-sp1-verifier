@@ -116,7 +116,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings --no-default-features --features export,groth16
+          args: --no-default-features --features export,groth16 -- -D warnings
 
   lint-plonk:
     name: Lint Contract with Plonk
@@ -142,4 +142,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings --no-default-features --features export,plonk
+          args: --no-default-features --features export,plonk -- -D warnings

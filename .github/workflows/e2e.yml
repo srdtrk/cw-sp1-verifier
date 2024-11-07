@@ -50,8 +50,7 @@ jobs:
         with:
           go-version: "1.23"
           check-latest: true
-          cache-dependency-path: |
-             e2e/interchaintestv8/go.sum
+          cache-dependency-path: e2e/interchaintestv8/go.sum
       - name: Run Tests
         run: |
           cd e2e/interchaintestv8
