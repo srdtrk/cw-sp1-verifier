@@ -33,7 +33,7 @@ func decodeHex(s string) []byte {
 }
 
 func GetPlonkFixture() Fixture {
-	return getFixture("../../../fixtures/plonk-fixture.json")
+	return getFixture("../../fixtures/plonk-fixture.json")
 }
 
 func GetGroth16Fixture() Fixture {

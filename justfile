@@ -18,6 +18,11 @@ generate-schemas:
   @echo "Done."
 
 # Run the unit tests
-unit-tests:
+test-unit:
   cargo test --locked --no-default-features --features export,groth16
   cargo test --locked --no-default-features --features export,plonk
+
+# Run the e2e tests
+test-e2e testname:
+  echo "Running {{testname}} test..."
+  cd e2e/interchaintestv8 && go test -v -run={{testname}}
