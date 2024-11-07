@@ -56,14 +56,16 @@ func (s *ContractTestSuite) TestPlonkVerifier() {
 	s.Require().True(s.Run("VerifyPlonk", func() {
 		fixture := types.GetPlonkFixture()
 
-		queryMsg := &cwsp1verifier.QueryMsg_VerifyProof{
-			Proof:        cwsp1verifier.ToBinary(fixture.DecodedProof()),
-			PublicValues: cwsp1verifier.ToBinary(fixture.DecodedPublicValues()),
-			VkHash:       fixture.Vkey,
+		execMsg := cwsp1verifier.ExecuteMsg{
+			VerifyProof: &cwsp1verifier.ExecuteMsg_VerifyProof{
+				Proof:        cwsp1verifier.ToBinary(fixture.DecodedProof()),
+				PublicValues: cwsp1verifier.ToBinary(fixture.DecodedPublicValues()),
+				VkHash:       fixture.Vkey,
+			},
 		}
 
 		// Call the contract with the proof and public values.
-		_, err := contract.QueryClient().VerifyProof(ctx, queryMsg)
+		_, err := contract.Execute(ctx, s.UserA.KeyName(), execMsg, "--gas", "12000000")
 		s.Require().NoError(err)
 	}))
 }
@@ -92,17 +94,19 @@ func (s *ContractTestSuite) TestGroth16Verifier() {
 		s.Require().NotEmpty(contract.Address)
 	}))
 
-	s.Require().True(s.Run("VerifyPlonk", func() {
+	s.Require().True(s.Run("VerifyGroth16", func() {
 		fixture := types.GetGroth16Fixture()
 
-		queryMsg := &cwsp1verifier.QueryMsg_VerifyProof{
-			Proof:        cwsp1verifier.ToBinary(fixture.DecodedProof()),
-			PublicValues: cwsp1verifier.ToBinary(fixture.DecodedPublicValues()),
-			VkHash:       fixture.Vkey,
+		execMsg := cwsp1verifier.ExecuteMsg{
+			VerifyProof: &cwsp1verifier.ExecuteMsg_VerifyProof{
+				Proof:        cwsp1verifier.ToBinary(fixture.DecodedProof()),
+				PublicValues: cwsp1verifier.ToBinary(fixture.DecodedPublicValues()),
+				VkHash:       fixture.Vkey,
+			},
 		}
 
 		// Call the contract with the proof and public values.
-		_, err := contract.QueryClient().VerifyProof(ctx, queryMsg)
+		_, err := contract.Execute(ctx, s.UserA.KeyName(), execMsg, "--gas", "6000000")
 		s.Require().NoError(err)
 	}))
 }

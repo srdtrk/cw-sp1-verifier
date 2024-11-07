@@ -5,22 +5,25 @@ package cwsp1verifier
 type InstantiateMsg struct{}
 
 // The execute messages supported by the contract.
-type ExecuteMsg struct{}
+type ExecuteMsg struct {
+	// Verifies an SP1 proof.
+	VerifyProof *ExecuteMsg_VerifyProof `json:"verify_proof,omitempty"`
+}
 
 // The query messages supported by the contract.
 type QueryMsg struct {
 	// Verifies an SP1 proof.
 	VerifyProof *QueryMsg_VerifyProof `json:"verify_proof,omitempty"`
 }
+type QueryMsg_VerifyProof VerifyProofMsg
 
-type QueryMsg_VerifyProof struct {
-	// The public values to verify the proof against.
-	PublicValues Binary `json:"public_values"`
-	// The verification key of the sp1 program.
-	VkHash string `json:"vk_hash"`
-	// The proof to verify.
-	Proof Binary `json:"proof"`
-}
+/*
+An empty struct that serves as a placeholder in different places, such as contracts that don't set a custom message.
+
+It is designed to be expressable in correct JSON and JSON Schema but contains no meaningful data. Previously we used enums without cases, but those cannot represented as valid JSON Schema (https://github.com/CosmWasm/cosmwasm/issues/451)
+*/
+type Empty struct{}
+type ExecuteMsg_VerifyProof VerifyProofMsg
 
 /*
 Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.
@@ -29,9 +32,12 @@ This is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8
 */
 type Binary string
 
-/*
-An empty struct that serves as a placeholder in different places, such as contracts that don't set a custom message.
-
-It is designed to be expressable in correct JSON and JSON Schema but contains no meaningful data. Previously we used enums without cases, but those cannot represented as valid JSON Schema (https://github.com/CosmWasm/cosmwasm/issues/451)
-*/
-type Empty struct{}
+// Verifies an SP1 proof.
+type VerifyProofMsg struct {
+	// The proof to verify.
+	Proof Binary `json:"proof"`
+	// The public values to verify the proof against.
+	PublicValues Binary `json:"public_values"`
+	// The verification key of the sp1 program.
+	VkHash string `json:"vk_hash"`
+}

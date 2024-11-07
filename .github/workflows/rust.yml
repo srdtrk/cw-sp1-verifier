@@ -10,8 +10,8 @@ on:
       - '**/*.go'
 
 jobs:
-  build-wasm:
-    name: Build Wasm
+  build-wasm-groth16:
+    name: Build Wasm with Groth16
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -24,19 +24,33 @@ jobs:
           toolchain: stable
           target: wasm32-unknown-unknown
 
-      - name: Run unit tests
+      - name: Compile WASM contract
         uses: actions-rs/cargo@v1
         with:
-          command: unit-test
-          args: --locked
+          command: wasm
+          args: --locked --no-default-features --features export,groth16
         env:
-          RUST_BACKTRACE: 1
+          RUSTFLAGS: "-C link-arg=-s"
+
+  build-wasm-plonk:
+    name: Build Wasm with Plonk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: wasm32-unknown-unknown
 
       - name: Compile WASM contract
         uses: actions-rs/cargo@v1
         with:
           command: wasm
-          args: --locked
+          args: --locked --no-default-features --features export,plonk
         env:
           RUSTFLAGS: "-C link-arg=-s"
 
@@ -67,34 +81,19 @@ jobs:
           command: build
           args: --locked --no-default-features
 
-  build-all-features:
-    name: Build with All Features
+  unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - name: Install just
+        uses: extractions/setup-just@v2
+      - name: Build Optimized Contract
+        run: just test-unit
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-
-      - name: Run unit tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: unit-test
-          args: --locked --all-features
-        env:
-          RUST_BACKTRACE: 1
-
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --locked --all-features
-  lints:
-    name: Lint Contract
+  lint-groth16:
+    name: Lint Contract with Groth16
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -117,14 +116,30 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: -- -D warnings --no-default-features --features export,groth16
 
-      - name: Generate Schema
+  lint-plonk:
+    name: Lint Contract with Plonk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
-          command: schema
-          args: --locked
+          command: fmt
+          args: --all -- --check
 
-      - name: Schema Changes
-        # fails if any changes not committed
-        run: git diff --exit-code schema
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings --no-default-features --features export,plonk
