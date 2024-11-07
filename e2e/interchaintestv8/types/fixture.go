@@ -37,7 +37,7 @@ func GetPlonkFixture() Fixture {
 }
 
 func GetGroth16Fixture() Fixture {
-	return getFixture("../../../fixtures/groth16-fixture.json")
+	return getFixture("../../fixtures/groth16-fixture.json")
 }
 
 func getFixture(path string) Fixture {
