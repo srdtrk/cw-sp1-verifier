@@ -50,9 +50,14 @@ pub fn execute(
     _deps: DepsMut,
     _env: Env,
     _info: MessageInfo,
-    _msg: ExecuteMsg,
+    msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    unimplemented!()
+    match msg {
+        ExecuteMsg::VerifyProof(msg) => {
+            query::verify_proof(msg.proof, msg.public_values, msg.vk_hash)
+                .map(|_| Response::default())
+        }
+    }
 }
 
 /// Handles the query messages by routing them to the respective handlers.
@@ -63,11 +68,9 @@ pub fn execute(
 #[cosmwasm_std::entry_point]
 pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> Result<Binary, ContractError> {
     match msg {
-        QueryMsg::VerifyProof {
-            proof,
-            public_values,
-            vk_hash,
-        } => query::verify_proof(proof, public_values, vk_hash).map(|_| b"{}".into()),
+        QueryMsg::VerifyProof(msg) => {
+            query::verify_proof(msg.proof, msg.public_values, msg.vk_hash).map(|_| b"{}".into())
+        }
     }
 }
 
@@ -115,6 +118,8 @@ mod tests {
         testing::{message_info, mock_dependencies, mock_env},
     };
 
+    use crate::types;
+
     #[derive(Debug, serde::Serialize, serde::Deserialize)]
     #[serde(rename_all = "camelCase")]
     struct TestingFixture {
@@ -148,13 +153,13 @@ mod tests {
         let public_values_bz =
             hex::decode(fixture.public_values.strip_prefix("0x").unwrap()).unwrap();
 
-        let msg = super::QueryMsg::VerifyProof {
+        let msg = types::msg::VerifyProofMsg {
             proof: proof_bz.into(),
             public_values: public_values_bz.into(),
             vk_hash: fixture.vkey,
         };
 
-        let res = super::query(deps.as_ref(), env, msg).unwrap();
+        let res = super::query(deps.as_ref(), env, msg.into()).unwrap();
         assert_eq!(b"{}", res.as_slice());
     }
 }
