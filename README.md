@@ -1,6 +1,6 @@
 # `CosmWasm` SP1 Verifier Contract
 
-This is a CosmWasm contract that verifies [SP1](https://github.com/succinctlabs/sp1) proofs. It can be used to verify plonk proofs if built with the `plonk` feature, or groth16 proofs if built with the `groth16` feature.
+This is a `CosmWasm` contract that verifies [SP1](https://github.com/succinctlabs/sp1) proofs. It can be used to verify plonk proofs if built with the `plonk` feature, or groth16 proofs if built with the `groth16` feature.
 
 This contract uses [cosmwasm optimizer](https://github.com/CosmWasm/optimizer) to build both the groth16 and plonk versions of the contract. The optimizer is a tool that allows you to build multiple versions of a contract with different features enabled.
 
